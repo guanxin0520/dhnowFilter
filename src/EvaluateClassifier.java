@@ -230,45 +230,14 @@ public class EvaluateClassifier {
         	  output.append("<ConfusionMatrix>"+matrix.toString()+"</ConfusionMatrix>\n");
         	  output.append("</classifier>\n");
         	  // Create file 
-        	  FileWriter fstream = new FileWriter("report.xml",true);
+        	  FileWriter fstream = new FileWriter(".\\output\\report.xml",true);
         	  BufferedWriter out = new BufferedWriter(fstream);
         	  out.write(output.toString());
-        	  /*************
-        	  out.write(date+"result of "+classifierIdentity+"\n");
-        	  out.write(matrix.toString());
-        	  out.write("\n");
-        	  out.write("Accuracy: " + trial.getAccuracy());
-        	  out.write("\n");
-      	// precision, recall, and F1 are calcuated for a specific                                          
-              //  class, which can be identified by an object (usually                                           
-      	//  a String) or the integer ID of the class                                                       
 
-        	  out.write("F1 for class 'Yes': " + trial.getF1("Yes"));
-        	  out.write("\n");
-        	  out.write("Precision for class '" +
-                                 classifier.getLabelAlphabet().lookupLabel(0) + "': " +
-                                 trial.getPrecision("Yes"));
-        	  out.write("\n");
-        	  out.write("Recall for class '" +
-                      classifier.getLabelAlphabet().lookupLabel(0) + "': " +
-                      trial.getRecall("Yes"));
-        	  out.write("\n");
-        	  out.write("F1 for class 'No': " + trial.getF1("No"));
-        	  out.write("\n");
-
-        	  out.write("Precision for class '" +
-                                 classifier.getLabelAlphabet().lookupLabel(1) + "': " +
-                                 trial.getPrecision("No"));
-        	  out.write("\n");
-        	  out.write("Recall for class '" +
-                      classifier.getLabelAlphabet().lookupLabel(1) + "': " +
-                      trial.getRecall("No"));
-        	  out.write("\n\n\n");
-        	  *************************///
         	  //Close the output stream
         	  out.close();
         	  fstream.close();
-        	  FileWriter fstream_ = new FileWriter("report_"+classifierIdentity+"_"+date+".xml",true);
+        	  FileWriter fstream_ = new FileWriter(".\\output\\report_"+classifierIdentity+"_"+date+".xml",true);
         	  BufferedWriter out_ = new BufferedWriter(fstream);
         	  out_.write("<?xml version=\"1.0\"?>\n");
         	  out_.write(output.toString());
@@ -280,6 +249,7 @@ public class EvaluateClassifier {
 		
 	}
 	
+	/* unused functions begin*******************************************************************
 	 public void evaluate(Classifier classifier, File file) throws IOException {
 		 System.out.println("evaluate start...");
         // Create an InstanceList that will contain the test data.                                         
@@ -339,7 +309,7 @@ public class EvaluateClassifier {
         //write to file
         try{
         	  // Create file 
-        	  FileWriter fstream = new FileWriter("report.txt",true);
+        	  FileWriter fstream = new FileWriter(".\\output\\report.txt",true);
         	  BufferedWriter out = new BufferedWriter(fstream);
         	  out.write(matrix.toString());
         	  out.write("\n");
@@ -402,7 +372,7 @@ public class EvaluateClassifier {
 	        //  of validation sets.                                                                            
 
 		Classifier classifier = trainClassifier( instanceLists[TRAINING] );
-		saveClassifier(classifier, new File(".\\classifier"));
+		saveClassifier(classifier, new File(".\\resources\\classifier"));
 	        return new Trial(classifier, instanceLists[TESTING]);
 	}
 	 
@@ -424,6 +394,8 @@ public class EvaluateClassifier {
 		
 		
 	}
+	
+	**************unused functions end**********************/
 	 
     public Classifier trainClassifier(InstanceList trainingInstances){
     	
@@ -662,8 +634,8 @@ public class EvaluateClassifier {
 		//save classifiers
 		if (classifier_r!=null)
 		{
-			this.saveClassifier(classifier_r,new File("newClassifier"));
-			saveInstancesList(trainSet,new File("newTrainSet"));
+			this.saveClassifier(classifier_r,new File(".\\resources\\newClassifier"));
+			saveInstancesList(trainSet,new File(".\\resources\\newTrainSet"));
 		}
 		
 		return classifier_r;
@@ -931,14 +903,14 @@ public class EvaluateClassifier {
     	Classifier classifier_r = this.trainClassifier(trainSet);
     	
     	//save new train set & classifier
-    	deleteFile("newTrainSet");
-    	saveInstancesList(trainSet,new File("newTrainSet"));
-    	saveClassifier(classifier_r,new File("newClassifier"));
+    	deleteFile(".\\resources\\newTrainSet");
+    	saveInstancesList(trainSet,new File(".\\resources\\newTrainSet"));
+    	saveClassifier(classifier_r,new File(".\\resources\\newClassifier"));
     	//evaluate new classifier
-    	InstanceList testSet = InstanceList.load(new File("testSet"));
+    	InstanceList testSet = InstanceList.load(new File(".\\resources\\testSet"));
     	Classifier classifier;
 		try {
-			classifier = loadClassifier(new File("classifier"));
+			classifier = loadClassifier(new File(".\\resources\\classifier"));
 			evaluateInstanceList(classifier, testSet,"old_classifier");
 			evaluateInstanceList(classifier_r,testSet,"update_classifier");
 		} catch (FileNotFoundException e) {
@@ -959,7 +931,7 @@ public class EvaluateClassifier {
     public InstanceList generateUpdateDataSet(){
     	
     	InstanceList newTrainSet = new InstanceList(pipe);
-    	InstanceList newTestSet = InstanceList.load(new File("testSet"));
+    	InstanceList newTestSet = InstanceList.load(new File(".\\resources\\testSet"));
     	
     	try {
 			Class.forName("org.sqlite.JDBC");
@@ -975,7 +947,7 @@ public class EvaluateClassifier {
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
 	    	
 			//get instance list from future data
-			InstanceList temp = readSingleFile(new File("futureData"),newTestSet.getPipe());
+			InstanceList temp = readSingleFile(new File(".\\resources\\futureData"),newTestSet.getPipe());
 			for(Instance instance: temp){
 				//get ground truth from database
 				String id = instance.getName().toString();
@@ -1024,8 +996,8 @@ public class EvaluateClassifier {
     		Random r = new Random();
     		newTestSet.shuffle(r);
     		newTestSet = newTestSet.subList(0, 1000);
-    		deleteFile("testSet");
-    		saveInstancesList(newTestSet,new File("testSet"));
+    		deleteFile(".\\resources\\testSet");
+    		saveInstancesList(newTestSet,new File(".\\resources\\testSet"));
     	}
     	
     	return newTrainSet;
@@ -1034,8 +1006,8 @@ public class EvaluateClassifier {
     //accept the new classifier
     public void replaceClassifier(){
     	try {
-			replaceFile("classifier","newClassifier");
-			replaceFile("trainSet","newTrainSet");
+			replaceFile(".\\resources\\classifier",".\\resources\\newClassifier");
+			replaceFile(".\\resources\\trainSet",".\\resources\\newTrainSet");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1060,8 +1032,8 @@ public class EvaluateClassifier {
     //backup classifier
     public void backupClassifier(){
     	try {
-			replaceFile("backupClassifier","classifier");
-			replaceFile("backupTrainSet","trainSet");
+			replaceFile(".\\resources\\backupClassifier",".\\resources\\classifier");
+			replaceFile(".\\resources\\backupTrainSet",".\\resources\\trainSet");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1071,8 +1043,8 @@ public class EvaluateClassifier {
     //reset classifier
     public void resetClassifier(){
     	try {
-			replaceFile("classifier","backupClassifier");
-			replaceFile("trainSet","backupTrainSet");
+			replaceFile(".\\resources\\classifier",".\\resources\\backupClassifier");
+			replaceFile(".\\resources\\trainSet",".\\resources\\backupTrainSet");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1137,12 +1109,12 @@ public class EvaluateClassifier {
     	boolean timestampFlag = false;
     	boolean download = true;
     	boolean onlydownload = false;
-    	String file_classifier = "classifier";
-    	String file_instanceList = "instanceList_r";
-    	String file_futureData = "futureData";
-    	String file_trainData = "trainingData";
+    	String file_classifier = ".\\resources\\classifier";
+    	String file_instanceList = ".\\resources\\instanceList_r";
+    	String file_futureData = ".\\resources\\futureData";
+    	String file_trainData = ".\\resources\\trainingData";
     	//String file_groundTruth = "result.csv";
-    	String file_groundTruth = "result.xml";
+    	String file_groundTruth = ".\\output\\result.xml";
     	
     	long timestamp = 0;
     	
@@ -1247,7 +1219,7 @@ public class EvaluateClassifier {
     			else if(args[i].equals("-u")){
     				//update classifier		
     				InstanceList newDataSet = eval.generateUpdateDataSet();
-    				InstanceList trainSet = InstanceList.load(new File("trainSet"));
+    				InstanceList trainSet = InstanceList.load(new File(".\\resources\\trainSet"));
     				eval.updateClassifier(trainSet, newDataSet);
     				return;
     				
@@ -1335,7 +1307,7 @@ public class EvaluateClassifier {
     	
     	try{
     		if(!timestampFlag){
-    			BufferedReader in = new BufferedReader(new FileReader("timestamp"));
+    			BufferedReader in = new BufferedReader(new FileReader(".\\resources\\timestamp"));
     			timestamp = Long.parseLong(in.readLine());
     			in.close();
     		}
@@ -1395,7 +1367,7 @@ public class EvaluateClassifier {
 				//File result = new File("result_"+date+".csv");
 				//eval.saveCsv(classArray,result);
 	    		//save it to XML format and update database
-				File result = new File("result_"+date+".xml");
+				File result = new File(".\\output\\result_"+date+".xml");
 				eval.saveXML(classArray,result);
 				
 	    	}

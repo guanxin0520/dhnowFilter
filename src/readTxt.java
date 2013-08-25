@@ -98,16 +98,6 @@ public class readTxt {
     private String htmlLT_symbol = "<";
     private String htmlGT_symbol = ">";
     
-    //output files name
-    private String output = ".\\output";
-    private String inputFile_pool = ".\\asset\\test.xml";
-    private String inputFile_choice = ".\\asset\\editor.xml";
-    private String output_content = ".\\output_content";
-    private String output_title_pool = ".\\output_titlt_pool";
-    private String output_title_choice = ".\\output_titlt_choice";
-    private String output_title = ".\\output_titlt";
-    private String output_mallet = ".\\output_mallet";
-    
     public readTxt(){
     	
     	
@@ -471,8 +461,180 @@ public class readTxt {
 	    }	
 	}
 	
+	public static String getNewItems() throws ClientProtocolException, URISyntaxException, IOException{
+		BufferedReader in = new BufferedReader(new FileReader(".\\resources\\timestamp"));
+		long lasttimestamp = Long.parseLong(in.readLine());
+		in.close();
+		return getNewItems(lasttimestamp);
+	}
+	
+	public static String getNewItems(long timestamp) throws URISyntaxException, ClientProtocolException, IOException{
+		
+		HttpClient httpclient = new DefaultHttpClient();
+		URIBuilder builder = new URIBuilder();
+		builder.setScheme("http").setHost("dhnow.chnm.org").setPath("/")
+				.addParameter("feed", "feedforward")
+				.addParameter("from",String.valueOf(timestamp));
+		
+		URI uri = builder.build();
+		HttpGet httpget = new HttpGet(uri);
+		System.out.println(httpget.getURI());
+		HttpResponse response = httpclient.execute(httpget);
+		String result = EntityUtils.toString(response.getEntity());
+		BufferedWriter out = null; 
+		long unixTime = System.currentTimeMillis() / 1000L;
+		String outputPath = ".\\resources\\timestamp";
+		FileOutputStream output=new FileOutputStream(outputPath,false);
+    	out = new BufferedWriter(new OutputStreamWriter(  
+                output));  
+    	out.append(String.valueOf(unixTime));
+    	out.close();
+		return result;
+	}
+	
+	public void write2file(String content, String outputPath) throws IOException{
+		
+		BufferedWriter out = null; 
+		if (outputPath ==""){
+			outputPath = ".\\resources\\test";
+		}
+		FileOutputStream output=new FileOutputStream(outputPath,false);
+    	out = new BufferedWriter(new OutputStreamWriter(  
+                output));  
+    	out.append(content);
+    	out.close();
+	}
+	
+	
+	public static void runReadTxt(long timestamp){
+		readTxt read = new readTxt();
+		String data;
+		String inputPath = ".\\resources\\input";
+		String outputPath = ".\\resources\\output";
+		String outputPath_new = outputPath+"_new";
+		Connection connection = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+		    
+		    // create a database connection
+		    connection = DriverManager.getConnection("jdbc:sqlite:records.db");
+		    Statement statement = connection.createStatement();
+		    statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			statement.executeUpdate("create table if not exists blogs (id INTEGER PRIMARY KEY, title string, author string, time string, url string, label string, score string, gtruth string )");
+			data = readTxt.getNewItems(timestamp);
+			read.write2file(data, inputPath);
+			System.out.println("\n start getting entries \n");
+			read.getEntries(inputPath, outputPath,statement);
+			readTxt.createDataFile(outputPath_new, ".\\resources\\futureData");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    finally
+	    {
+	      try
+	      {
+	        if(connection != null)
+	          connection.close();
+	      }
+	      catch(SQLException e)
+	      {
+	        // connection close failed.
+	        System.err.println(e);
+	      }
+	    }		
+		
+	}
+	
+	
+	public static void runReadTxt_(String inputPath){
+		readTxt read = new readTxt();
+		
+		String outputPath = ".\\resources\\output";
+		String outputPath_new = outputPath+"_new";
+		Connection connection = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+		    
+		    // create a database connection
+		    connection = DriverManager.getConnection("jdbc:sqlite:records.db");
+		    Statement statement = connection.createStatement();
+		    statement.setQueryTimeout(30);  // set timeout to 30 sec.
+			statement.executeUpdate("create table if not exists blogs (id INTEGER PRIMARY KEY, title string, author string, time string, url string, label string, score string, gtruth string )");
+			System.out.println("\n start getting entries \n");
+			read.getEntries(inputPath, outputPath,statement);
+			readTxt.createDataFile(outputPath_new, ".\\resources\\futureData");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    finally
+	    {
+	      try
+	      {
+	        if(connection != null)
+	          connection.close();
+	      }
+	      catch(SQLException e)
+	      {
+	        // connection close failed.
+	        System.err.println(e);
+	      }
+	    }		
+		
+	}
 /****************************************************************************************/
-/*****************************Previous version, not used***********************************************************/
+	
+    /*************************
+     * main 
+     * @param args
+     * @throws ClassNotFoundException 
+     */
+	public static void main(String[] args) throws ClassNotFoundException {
+	
+		if(args.length!=0){
+			
+			System.out.println(args[0]);
+			runReadTxt_(args[0]);
+		}
+		else{
+			try {
+				String data = readTxt.getNewItems();
+				//System.out.println("finish!");
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//runReadTxt();
+		}
+    }
+}
+
+
+
+
+/****************************************************************************************/
+/*****************************Previous version, not used***********************************************************
 	public void generatePosNegFile(String content, String title, String outputPath){
 		
 		File contentFile = new File(content);
@@ -543,7 +705,7 @@ public class readTxt {
 		
 	}
 	
-	/********************************************************************
+	********************************************************************
 	 * get a sample from the pool.  train and test doesn't overlap. assume neg have large amount instance
 	 * @param positive: file for positive input
 	 * @param negative: file for negative input
@@ -552,6 +714,7 @@ public class readTxt {
 	 * @param test_total: size of test
 	 * @param ratio: positive : total
 	 */
+	/****************************************************************************************************
 	public void randomSample(String positive, String negative, String output, int train_total, int test_total, float ratio){
 		
 		//check positive and negative num and adjust the train set and test set size 
@@ -882,51 +1045,7 @@ public class readTxt {
 		}
 		return cards;
 	}
-	
-	public static String getNewItems() throws ClientProtocolException, URISyntaxException, IOException{
-		BufferedReader in = new BufferedReader(new FileReader("timestamp"));
-		long lasttimestamp = Long.parseLong(in.readLine());
-		in.close();
-		return getNewItems(lasttimestamp);
-	}
-	
-	public static String getNewItems(long timestamp) throws URISyntaxException, ClientProtocolException, IOException{
-		
-		HttpClient httpclient = new DefaultHttpClient();
-		URIBuilder builder = new URIBuilder();
-		builder.setScheme("http").setHost("dhnow.chnm.org").setPath("/")
-				.addParameter("feed", "feedforward")
-				.addParameter("from",String.valueOf(timestamp));
-		
-		URI uri = builder.build();
-		HttpGet httpget = new HttpGet(uri);
-		System.out.println(httpget.getURI());
-		HttpResponse response = httpclient.execute(httpget);
-		String result = EntityUtils.toString(response.getEntity());
-		BufferedWriter out = null; 
-		long unixTime = System.currentTimeMillis() / 1000L;
-		String outputPath = "timestamp";
-		FileOutputStream output=new FileOutputStream(outputPath,false);
-    	out = new BufferedWriter(new OutputStreamWriter(  
-                output));  
-    	out.append(String.valueOf(unixTime));
-    	out.close();
-		return result;
-	}
-	
-	public void write2file(String content, String outputPath) throws IOException{
-		
-		BufferedWriter out = null; 
-		if (outputPath ==""){
-			outputPath = "test";
-		}
-		FileOutputStream output=new FileOutputStream(outputPath,false);
-    	out = new BufferedWriter(new OutputStreamWriter(  
-                output));  
-    	out.append(content);
-    	out.close();
-	}
-	
+	***********************************************************/
 	 /***************
      * xml to txt
 	public static void main(String[] args) {
@@ -964,7 +1083,7 @@ public class readTxt {
     }
     **************/
 	
-/****************************Previous version end************************************************************/
+
 /********************download from google reader******************	
 	public static void runReadTxt(){
 		readTxt read = new readTxt();
@@ -1023,126 +1142,4 @@ public class readTxt {
 		
 	}
 	***********************************************************************/
-	public static void runReadTxt(long timestamp){
-		readTxt read = new readTxt();
-		String data;
-		String inputPath = "input";
-		String outputPath = "output";
-		String outputPath_new = outputPath+"_new";
-		Connection connection = null;
-		try {
-			Class.forName("org.sqlite.JDBC");
-		    
-		    // create a database connection
-		    connection = DriverManager.getConnection("jdbc:sqlite:records.db");
-		    Statement statement = connection.createStatement();
-		    statement.setQueryTimeout(30);  // set timeout to 30 sec.
-			statement.executeUpdate("create table if not exists blogs (id INTEGER PRIMARY KEY, title string, author string, time string, url string, label string, score string, gtruth string )");
-			data = readTxt.getNewItems(timestamp);
-			read.write2file(data, inputPath);
-			System.out.println("\n start getting entries \n");
-			read.getEntries(inputPath, outputPath,statement);
-			readTxt.createDataFile(outputPath_new, "futureData");
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    finally
-	    {
-	      try
-	      {
-	        if(connection != null)
-	          connection.close();
-	      }
-	      catch(SQLException e)
-	      {
-	        // connection close failed.
-	        System.err.println(e);
-	      }
-	    }		
-		
-	}
-	
-	
-	public static void runReadTxt_(String inputPath){
-		readTxt read = new readTxt();
-		
-		String outputPath = "output";
-		String outputPath_new = outputPath+"_new";
-		Connection connection = null;
-		try {
-			Class.forName("org.sqlite.JDBC");
-		    
-		    // create a database connection
-		    connection = DriverManager.getConnection("jdbc:sqlite:records.db");
-		    Statement statement = connection.createStatement();
-		    statement.setQueryTimeout(30);  // set timeout to 30 sec.
-			statement.executeUpdate("create table if not exists blogs (id INTEGER PRIMARY KEY, title string, author string, time string, url string, label string, score string, gtruth string )");
-			System.out.println("\n start getting entries \n");
-			read.getEntries(inputPath, outputPath,statement);
-			readTxt.createDataFile(outputPath_new, "futureData");
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    finally
-	    {
-	      try
-	      {
-	        if(connection != null)
-	          connection.close();
-	      }
-	      catch(SQLException e)
-	      {
-	        // connection close failed.
-	        System.err.println(e);
-	      }
-	    }		
-		
-	}
-/****************************************************************************************/
-	
-    /*************************
-     * main 
-     * @param args
-     * @throws ClassNotFoundException 
-     */
-	public static void main(String[] args) throws ClassNotFoundException {
-	
-		if(args.length!=0){
-			
-			System.out.println(args[0]);
-			runReadTxt_(args[0]);
-		}
-		else{
-			try {
-				String data = readTxt.getNewItems();
-				//System.out.println("finish!");
-			} catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			//runReadTxt();
-		}
-    }
-}
+/****************************Previous version end************************************************************/

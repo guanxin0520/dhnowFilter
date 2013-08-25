@@ -22,6 +22,8 @@ public class GoogleReaderFeed {
 	/*************************************
 	 * According to google reader api, get atoms from google reader
 	 * 
+	 * because google reader has closed, this function is out of date
+	 * 
 	 * @author guanxin
 	 */
 	private String label = "DH";
@@ -44,8 +46,8 @@ public class GoogleReaderFeed {
 		URIBuilder builder = new URIBuilder();
 		builder.setScheme("https").setHost("www.google.com").setPath("/accounts/ClientLogin")
 				.setParameter("accountType", "HOSTED_OR_GOOGLE")
-				.setParameter("Email", "reader@pressforward.org")
-				.setParameter("Passwd","CHNMadmin1994")
+				.setParameter("Email", "*****************")
+				.setParameter("Passwd","***********")
 				.setParameter("service", "reader")
 				.setParameter("source", "DHNow");
 		
