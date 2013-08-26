@@ -124,10 +124,12 @@ java -jar recommendSystem.jar -r
 
 In this project we use Mallet and libSVM libary. Thanks for their execllent 
 job. Mallet is under CPL licence, and libSVM is under "the modified BSD license", 
-which compatible with many free software licenses such as GPL.
+which compatible with many free software licenses such as GPL. We also use 
+Mallet-LibSVM, a library for directly using LibSVM from Mallet.
 
   McCallum, Andrew Kachites.  "MALLET: A Machine Learning for Language Toolkit."
     http://mallet.cs.umass.edu. 2002.
     
   Chih-Chung Chang and Chih-Jen Lin, LIBSVM : a library for support vector machines. ACM Transactions on Intelligent Systems and Technology, 2:27:1--27:27, 2011. Software available at http://www.csie.ntu.edu.tw/~cjlin/libsvm
 
+  Mellet-LibSVM: https://github.com/syeedibnfaiz/Mallet-LibSVM
