@@ -11,7 +11,7 @@ A general using version written in Python is under development.
 First install java 1.6 or later.
 
  Then in teriminal or command line, run<br/>
- java -jar recommendSystem.jar<br/>
+ java -jar dhnowFilter.jar<br/>
  It will make prediction about the new blogs based on the classifier. And the output file would be result_xxxxxxxx.xml.   xxxxxxxx is the current date MMDDYYYY. The output file will be stored in output folder
 
 The format of result_xxxxxxx.xml :
@@ -38,12 +38,12 @@ First please set the review result(y or n) to the tag <gtruth> of every item in 
 
 Before you update the classifier, you can backup the current classifier by run
 <pre>
-java -jar recommendSystem.jar -b
+java -jar dhnowFilter.jar -b
 </pre>
 Then run
 <pre>
-java -jar recommendSystem.jar -g ./output/result_xxxxxxxx.xml <br/>
-java -jar recommendSystem.jar -u
+java -jar dhnowFilter.jar -g ./output/result_xxxxxxxx.xml <br/>
+java -jar dhnowFilter.jar -u
 </pre>
 it will save the evaluate result of the new classifier to
 report_old_classifier_xxxxxxxx.xml and
@@ -68,8 +68,10 @@ Formate of that file is:
   &lt;/ConfusionMatrix&gt;
 &lt;/classifier&gt;
 </pre>
-If you are satisfied with it, run java -jar recommendSystem.jar -a
-
+If you are satisfied with it, run 
+<pre>
+ java -jar dhnowFilter.jar -a
+</pre>
 done!
 ***************************************************************
 ###Retrain classifier
@@ -77,8 +79,8 @@ if not satisfied with the classifier, you can retrain a new one.
 
 before you update the classifier, you can backup the current classifier by run
 <pre>
-java -jar recommendSystem.jar -b
-java -jar recommendSystem.jar -t
+java -jar dhnowFilter.jar -b
+java -jar dhnowFilter.jar -t
 </pre>
 The evaluate result of the new classifier will be saved in file
 report_retrain_classifier_xxxxxxxx.xml, xxxxxxxx is date MMddyyyy
@@ -104,7 +106,7 @@ formate of that file is:
 
 If you are satisfied with it, run 
 <pre>
-java -jar recommendSystem.jar -a
+java -jar dhnowFilter.jar -a
 </pre>
 
 done!
@@ -112,12 +114,12 @@ done!
 ###Backup/Reset classifier
 you can backup your classifier by run
 <pre>
-java -jar recommendSystem.jar -b
+java -jar dhnowFilter.jar -b
 </pre>
 
 you can backup your classifier by run
 <pre>
-java -jar recommendSystem.jar -r
+java -jar dhnowFilter.jar -r
 </pre>
 ***************************************************************
 ###Copyright and Acknowlagements:
