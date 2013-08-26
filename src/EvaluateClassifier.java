@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -221,24 +222,24 @@ public class EvaluateClassifier {
         	  String date = new SimpleDateFormat("MMddyyyy").format(new Date());
         	  StringBuffer output = new StringBuffer();
         	  output.append("<classifier>\n");
-        	  output.append("<date>"+date+"</date>\n");
-        	  output.append("<description>"+classifierIdentity+"</description>\n");
-        	  output.append("<Accuracy>"+trial.getAccuracy()+"</Accuracy>\n");
-        	  output.append("<F1>"+String.format("%.2f", trial.getF1("Yes"))+"</F1>\n");
-        	  output.append("<Precision>"+String.format("%.2f",trial.getPrecision("Yes"))+"</Precision>\n");
-        	  output.append("<Recall>"+String.format("%.2f",trial.getRecall("Yes"))+"</Recall>\n");
-        	  output.append("<ConfusionMatrix>"+matrix.toString()+"</ConfusionMatrix>\n");
+        	  output.append("\t<date>"+date+"</date>\n");
+        	  output.append("\t<description>"+classifierIdentity+"</description>\n");
+        	  output.append("\t<Accuracy>"+String.format("%.2f",trial.getAccuracy())+"</Accuracy>\n");
+        	  output.append("\t<F1>"+String.format("%.2f", trial.getF1("Yes"))+"</F1>\n");
+        	  output.append("\t<Precision>"+String.format("%.2f",trial.getPrecision("Yes"))+"</Precision>\n");
+        	  output.append("\t<Recall>"+String.format("%.2f",trial.getRecall("Yes"))+"</Recall>\n");
+        	  output.append("\t<ConfusionMatrix>\n\t"+matrix.toString()+"\t</ConfusionMatrix>\n");
         	  output.append("</classifier>\n");
         	  // Create file 
-        	  FileWriter fstream = new FileWriter(".\\output\\report.xml",true);
+        	  FileWriter fstream = new FileWriter("./output/report.xml",true);
         	  BufferedWriter out = new BufferedWriter(fstream);
         	  out.write(output.toString());
 
         	  //Close the output stream
         	  out.close();
         	  fstream.close();
-        	  FileWriter fstream_ = new FileWriter(".\\output\\report_"+classifierIdentity+"_"+date+".xml",true);
-        	  BufferedWriter out_ = new BufferedWriter(fstream);
+        	  FileWriter fstream_ = new FileWriter("./output/report_"+classifierIdentity+"_"+date+".xml",false);
+        	  BufferedWriter out_ = new BufferedWriter(fstream_);
         	  out_.write("<?xml version=\"1.0\"?>\n");
         	  out_.write(output.toString());
         	  out_.close();
@@ -634,8 +635,8 @@ public class EvaluateClassifier {
 		//save classifiers
 		if (classifier_r!=null)
 		{
-			this.saveClassifier(classifier_r,new File(".\\resources\\newClassifier"));
-			saveInstancesList(trainSet,new File(".\\resources\\newTrainSet"));
+			this.saveClassifier(classifier_r,new File("./resources/newClassifier"));
+			saveInstancesList(trainSet,new File("./resources/newTrainSet"));
 		}
 		
 		return classifier_r;
@@ -767,12 +768,12 @@ public class EvaluateClassifier {
 					}
 				}
 				//out.append(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%.4f\",\"\"",temp.getInstance().getName(),query.getString(2),query.getString(5),recommend,score));
-				out.append(String.format("<id>%s</id>\n", temp.getInstance().getName()));
-				out.append(String.format("<title><![CDATA[%s]]></title>\n", query.getString(2)));
-				out.append(String.format("<link>%s</link>\n", query.getString(5)));
-				out.append(String.format("<label>%s</label>\n", recommend));
-				out.append(String.format("<score>%s</score>", score));
-				out.append("<gtruth></gtruth>\n");
+				out.append(String.format("\t<id>%s</id>\n", temp.getInstance().getName()));
+				out.append(String.format("\t<title><![CDATA[%s]]></title>\n", query.getString(2)));
+				out.append(String.format("\t<link><![CDATA[%s]]></link>\n", query.getString(5)));
+				out.append(String.format("\t<label>%s</label>\n", recommend));
+				out.append(String.format("\t<score>%.4f</score>\n", score));
+				out.append("\t<gtruth></gtruth>\n");
 				out.append("</item>\n");
 				sql = String.format("update blogs set \"label\" = \"%s\" , \"score\" = \"%.4f\" where \"id\"=%s",recommend,score,id);
 				statement.executeUpdate(sql);
@@ -903,14 +904,14 @@ public class EvaluateClassifier {
     	Classifier classifier_r = this.trainClassifier(trainSet);
     	
     	//save new train set & classifier
-    	deleteFile(".\\resources\\newTrainSet");
-    	saveInstancesList(trainSet,new File(".\\resources\\newTrainSet"));
-    	saveClassifier(classifier_r,new File(".\\resources\\newClassifier"));
+    	deleteFile("./resources/newTrainSet");
+    	saveInstancesList(trainSet,new File("./resources/newTrainSet"));
+    	saveClassifier(classifier_r,new File("./resources/newClassifier"));
     	//evaluate new classifier
-    	InstanceList testSet = InstanceList.load(new File(".\\resources\\testSet"));
+    	InstanceList testSet = InstanceList.load(new File("./resources/testSet"));
     	Classifier classifier;
 		try {
-			classifier = loadClassifier(new File(".\\resources\\classifier"));
+			classifier = loadClassifier(new File("./resources/classifier"));
 			evaluateInstanceList(classifier, testSet,"old_classifier");
 			evaluateInstanceList(classifier_r,testSet,"update_classifier");
 		} catch (FileNotFoundException e) {
@@ -931,7 +932,7 @@ public class EvaluateClassifier {
     public InstanceList generateUpdateDataSet(){
     	
     	InstanceList newTrainSet = new InstanceList(pipe);
-    	InstanceList newTestSet = InstanceList.load(new File(".\\resources\\testSet"));
+    	InstanceList newTestSet = InstanceList.load(new File("./resources/testSet"));
     	
     	try {
 			Class.forName("org.sqlite.JDBC");
@@ -947,7 +948,7 @@ public class EvaluateClassifier {
 			statement.setQueryTimeout(30);  // set timeout to 30 sec.
 	    	
 			//get instance list from future data
-			InstanceList temp = readSingleFile(new File(".\\resources\\futureData"),newTestSet.getPipe());
+			InstanceList temp = readSingleFile(new File("./resources/futureData"),newTestSet.getPipe());
 			for(Instance instance: temp){
 				//get ground truth from database
 				String id = instance.getName().toString();
@@ -996,8 +997,8 @@ public class EvaluateClassifier {
     		Random r = new Random();
     		newTestSet.shuffle(r);
     		newTestSet = newTestSet.subList(0, 1000);
-    		deleteFile(".\\resources\\testSet");
-    		saveInstancesList(newTestSet,new File(".\\resources\\testSet"));
+    		deleteFile("./resources/testSet");
+    		saveInstancesList(newTestSet,new File("./resources/testSet"));
     	}
     	
     	return newTrainSet;
@@ -1006,8 +1007,8 @@ public class EvaluateClassifier {
     //accept the new classifier
     public void replaceClassifier(){
     	try {
-			replaceFile(".\\resources\\classifier",".\\resources\\newClassifier");
-			replaceFile(".\\resources\\trainSet",".\\resources\\newTrainSet");
+			replaceFile("./resources/classifier","./resources/newClassifier");
+			replaceFile("./resources/trainSet","./resources/newTrainSet");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1032,8 +1033,8 @@ public class EvaluateClassifier {
     //backup classifier
     public void backupClassifier(){
     	try {
-			replaceFile(".\\resources\\backupClassifier",".\\resources\\classifier");
-			replaceFile(".\\resources\\backupTrainSet",".\\resources\\trainSet");
+			replaceFile("./resources/backupClassifier","./resources/classifier");
+			replaceFile("./resources\\backupTrainSet","./resources/trainSet");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1043,8 +1044,8 @@ public class EvaluateClassifier {
     //reset classifier
     public void resetClassifier(){
     	try {
-			replaceFile(".\\resources\\classifier",".\\resources\\backupClassifier");
-			replaceFile(".\\resources\\trainSet",".\\resources\\backupTrainSet");
+			replaceFile("./resources/classifier","./resources/backupClassifier");
+			replaceFile("./resources/trainSet","./resources/backupTrainSet");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1109,12 +1110,12 @@ public class EvaluateClassifier {
     	boolean timestampFlag = false;
     	boolean download = true;
     	boolean onlydownload = false;
-    	String file_classifier = ".\\resources\\classifier";
-    	String file_instanceList = ".\\resources\\instanceList_r";
-    	String file_futureData = ".\\resources\\futureData";
-    	String file_trainData = ".\\resources\\trainingData";
+    	String file_classifier = "./resources/classifier";
+    	String file_instanceList = "./resources/instanceList_r";
+    	String file_futureData = "./resources/futureData";
+    	String file_trainData = "./resources/trainingData";
     	//String file_groundTruth = "result.csv";
-    	String file_groundTruth = ".\\output\\result.xml";
+    	String file_groundTruth = "./output/result.xml";
     	
     	long timestamp = 0;
     	
@@ -1127,6 +1128,8 @@ public class EvaluateClassifier {
     			if(args[i].equals("-t")){
     				
     				loadClassifier = false; //training with instance list
+    				download = false;
+    				runPredict = false;
     			}
     			else if(args[i].equals("-nt")){
     				
@@ -1219,7 +1222,7 @@ public class EvaluateClassifier {
     			else if(args[i].equals("-u")){
     				//update classifier		
     				InstanceList newDataSet = eval.generateUpdateDataSet();
-    				InstanceList trainSet = InstanceList.load(new File(".\\resources\\trainSet"));
+    				InstanceList trainSet = InstanceList.load(new File("./resources/trainSet"));
     				eval.updateClassifier(trainSet, newDataSet);
     				return;
     				
@@ -1307,8 +1310,10 @@ public class EvaluateClassifier {
     	
     	try{
     		if(!timestampFlag){
-    			BufferedReader in = new BufferedReader(new FileReader(".\\resources\\timestamp"));
+    			BufferedReader in = new BufferedReader(new FileReader("./resources/timestamp"));
+    			//BufferedReader in_ = new BufferedReader(new FileReader(in.getPath()));
     			timestamp = Long.parseLong(in.readLine());
+    			System.out.println(timestamp);
     			in.close();
     		}
     		
@@ -1367,7 +1372,7 @@ public class EvaluateClassifier {
 				//File result = new File("result_"+date+".csv");
 				//eval.saveCsv(classArray,result);
 	    		//save it to XML format and update database
-				File result = new File(".\\output\\result_"+date+".xml");
+				File result = new File("./output/result_"+date+".xml");
 				eval.saveXML(classArray,result);
 				
 	    	}

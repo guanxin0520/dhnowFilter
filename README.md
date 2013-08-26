@@ -12,7 +12,7 @@ First install java 1.6 or later.
 
  Then in teriminal or command line, run<br/>
  java -jar recommendSystem.jar<br/>
- It will make prediction about the new blogs based on the classifier. And the output file would be result_xxxxxxxx.xml.   xxxxxxxx is the current date MMDDYYYY.
+ It will make prediction about the new blogs based on the classifier. And the output file would be result_xxxxxxxx.xml.   xxxxxxxx is the current date MMDDYYYY. The output file will be stored in output folder
 
 The format of result_xxxxxxx.xml :
 <pre>
@@ -21,7 +21,7 @@ The format of result_xxxxxxx.xml :
   &lt;item&gt;
       &lt;id&gt;4152&lt;/id&gt;
       &lt;title&gt;&lt;![CDATA[Bisson, Casey: Camera frustrations and other first world problems]]&gt;&lt;/title&gt;
-      &lt;link&gt;http://maisonbisson.com/?p=16790&lt;/link&gt;
+      &lt;link&gt;&lt;![CDATA[http://maisonbisson.com/?p=16790]]&gt;&lt;/link&gt;
       &lt;label&gt;recommend&lt;/label&gt;
       &lt;score&gt;4.3278&lt;/score&gt;
       &lt;gtruth&gt;/gtruth&gt;
@@ -42,13 +42,14 @@ java -jar recommendSystem.jar -b
 </pre>
 Then run
 <pre>
-java -jar recommendSystem.jar -g result_xxxxxxxx.xml <br/>
+java -jar recommendSystem.jar -g ./output/result_xxxxxxxx.xml <br/>
 java -jar recommendSystem.jar -u
 </pre>
 it will save the evaluate result of the new classifier to
 report_old_classifier_xxxxxxxx.xml and
-report_update_classifier_xxxxxxxx.xml, xxxxxxxx is date MMddyyyy
-formate of that file is:
+report_update_classifier_xxxxxxxx.xml, xxxxxxxx is date MMddyyyy.
+These files are stored in output folder.
+Formate of that file is:
 
 <pre>
 &lt;?xml version="1.0"?&gt;

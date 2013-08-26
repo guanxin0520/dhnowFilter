@@ -272,7 +272,7 @@ public class readTxt {
         	FileOutputStream output=new FileOutputStream(outputPath,true);
         	out = new BufferedWriter(new OutputStreamWriter(  
                     output));  
-        	FileOutputStream output_new=new FileOutputStream(outputPath+"_new",true);
+        	FileOutputStream output_new=new FileOutputStream(outputPath+"_new",false);
         	out_new = new BufferedWriter(new OutputStreamWriter(  
                     output_new));  
             
@@ -462,7 +462,7 @@ public class readTxt {
 	}
 	
 	public static String getNewItems() throws ClientProtocolException, URISyntaxException, IOException{
-		BufferedReader in = new BufferedReader(new FileReader(".\\resources\\timestamp"));
+		BufferedReader in = new BufferedReader(new FileReader("./resources/timestamp"));
 		long lasttimestamp = Long.parseLong(in.readLine());
 		in.close();
 		return getNewItems(lasttimestamp);
@@ -483,7 +483,7 @@ public class readTxt {
 		String result = EntityUtils.toString(response.getEntity());
 		BufferedWriter out = null; 
 		long unixTime = System.currentTimeMillis() / 1000L;
-		String outputPath = ".\\resources\\timestamp";
+		String outputPath = "./resources/timestamp";
 		FileOutputStream output=new FileOutputStream(outputPath,false);
     	out = new BufferedWriter(new OutputStreamWriter(  
                 output));  
@@ -496,7 +496,7 @@ public class readTxt {
 		
 		BufferedWriter out = null; 
 		if (outputPath ==""){
-			outputPath = ".\\resources\\test";
+			outputPath = "./resources/test";
 		}
 		FileOutputStream output=new FileOutputStream(outputPath,false);
     	out = new BufferedWriter(new OutputStreamWriter(  
@@ -509,8 +509,8 @@ public class readTxt {
 	public static void runReadTxt(long timestamp){
 		readTxt read = new readTxt();
 		String data;
-		String inputPath = ".\\resources\\input";
-		String outputPath = ".\\resources\\output";
+		String inputPath = "./resources/input";
+		String outputPath = "./resources/output";
 		String outputPath_new = outputPath+"_new";
 		Connection connection = null;
 		try {
@@ -525,7 +525,7 @@ public class readTxt {
 			read.write2file(data, inputPath);
 			System.out.println("\n start getting entries \n");
 			read.getEntries(inputPath, outputPath,statement);
-			readTxt.createDataFile(outputPath_new, ".\\resources\\futureData");
+			readTxt.createDataFile(outputPath_new, "./resources/futureData");
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -560,7 +560,7 @@ public class readTxt {
 	public static void runReadTxt_(String inputPath){
 		readTxt read = new readTxt();
 		
-		String outputPath = ".\\resources\\output";
+		String outputPath = "./resources/output";
 		String outputPath_new = outputPath+"_new";
 		Connection connection = null;
 		try {
@@ -573,7 +573,7 @@ public class readTxt {
 			statement.executeUpdate("create table if not exists blogs (id INTEGER PRIMARY KEY, title string, author string, time string, url string, label string, score string, gtruth string )");
 			System.out.println("\n start getting entries \n");
 			read.getEntries(inputPath, outputPath,statement);
-			readTxt.createDataFile(outputPath_new, ".\\resources\\futureData");
+			readTxt.createDataFile(outputPath_new, "./resources/futureData");
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

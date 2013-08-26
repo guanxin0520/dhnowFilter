@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<classifier>
+	<date>08252013</date>
+	<description>retrain_classifier</description>
+	<Accuracy>0.9608918128654971</Accuracy>
+	<F1>0.78</F1>
+	<Precision>0.75</Precision>
+	<Recall>0.82</Recall>
+	<ConfusionMatrix>
+	Confusion Matrix, row=true, column=predicted  accuracy=0.9608918128654971
+  label   0   1  |total
+  0  No 2436  65  |2501
+  1 Yes  42 193  |235
+	</ConfusionMatrix>
+</classifier>

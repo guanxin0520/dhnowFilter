@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<classifier>
+	<date>08252013</date>
+	<description>update_classifier</description>
+	<Accuracy>0.952</Accuracy>
+	<F1>0.76</F1>
+	<Precision>0.71</Precision>
+	<Recall>0.82</Recall>
+	<ConfusionMatrix>
+	Confusion Matrix, row=true, column=predicted  accuracy=0.952
+  label   0   1  |total
+  0  No 877  31  |908
+  1 Yes  17  75  |92
+	</ConfusionMatrix>
+</classifier>
